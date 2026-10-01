@@ -1,8 +1,3 @@
-Abaixo está um `index.html` completo, responsivo e sem dependências externas. Ele permite escolher de 1 a 21 parcelas e calcula os valores com as taxas da imagem. O cálculo considera a taxa fixa de **R$ 0,49 por cobrança** e, na antecipação, parcelas a cada **32 dias**.
-
-Salve o conteúdo como `index.html` e abra o arquivo no navegador.
-
-```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,14 +7,10 @@ Salve o conteúdo como `index.html` e abra o arquivo no navegador.
 
   <style>
     :root {
-      color-scheme: light;
-      --azul: #244bb8;
-      --azul-escuro: #1a3b98;
-      --texto: #202124;
-      --texto-suave: #666a73;
-      --borda: #dedfe4;
-      --fundo: #f5f6f8;
-      --branco: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #202124;
+      background: #f4f5f7;
+      font-synthesis: none;
     }
 
     * {
@@ -28,258 +19,179 @@ Salve o conteúdo como `index.html` e abra o arquivo no navegador.
 
     body {
       margin: 0;
-      padding: 32px 18px;
-      background: var(--fundo);
-      color: var(--texto);
-      font-family: Arial, Helvetica, sans-serif;
+      padding: 28px 16px;
     }
 
     .container {
-      width: min(1120px, 100%);
+      width: min(1100px, 100%);
       margin: 0 auto;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 24px;
-      align-items: start;
     }
 
     .card {
-      background: var(--branco);
-      border: 1px solid var(--borda);
+      background: #fff;
+      border: 1px solid #e1e4e8;
       border-radius: 18px;
-      padding: 28px;
-      box-shadow: 0 4px 18px rgba(20, 30, 60, 0.04);
+      padding: 26px;
+      box-shadow: 0 4px 18px rgba(25, 35, 50, 0.05);
     }
 
     h1,
     h2 {
-      margin: 0 0 12px;
-      font-weight: 500;
+      margin: 0 0 14px;
+      font-size: 21px;
+      font-weight: 600;
     }
 
-    h1 {
-      font-size: 23px;
+    .intro {
+      margin: 0 0 26px;
+      color: #5f6368;
+      line-height: 1.5;
     }
 
-    h2 {
-      font-size: 22px;
-    }
-
-    .descricao {
-      margin: 0 0 28px;
-      color: var(--texto-suave);
-      line-height: 1.55;
-    }
-
-    .campo {
-      margin-bottom: 20px;
-    }
-
-    label,
-    .rotulo {
+    label {
       display: block;
-      margin: 0 0 8px;
+      margin: 16px 0 7px;
       font-size: 14px;
+      color: #45484d;
     }
 
-    .entrada-valor {
+    .input-wrap {
       display: flex;
       align-items: center;
-      min-height: 46px;
-      border: 1px solid var(--borda);
+      border: 1px solid #cfd4dc;
       border-radius: 10px;
+      background: #fff;
       overflow: hidden;
     }
 
-    .prefixo {
-      padding: 0 12px;
-      color: var(--texto-suave);
-      border-right: 1px solid var(--borda);
+    .input-wrap:focus-within,
+    select:focus {
+      outline: 2px solid rgba(37, 82, 190, 0.18);
+      border-color: #2552be;
     }
 
-    input,
+    .currency {
+      padding: 12px;
+      color: #656b73;
+      border-right: 1px solid #e3e6eb;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      min-width: 0;
+      padding: 12px;
+      border: 0;
+      outline: 0;
+      font: inherit;
+      background: transparent;
+    }
+
     select {
       width: 100%;
-      min-height: 46px;
-      padding: 10px 12px;
-      border: 1px solid var(--borda);
+      padding: 12px;
+      border: 1px solid #cfd4dc;
       border-radius: 10px;
-      background: var(--branco);
-      color: var(--texto);
+      background: #fff;
       font: inherit;
-      outline: none;
     }
 
-    .entrada-valor input {
-      min-height: 44px;
-      border: 0;
-      border-radius: 0;
-    }
-
-    input:focus,
-    select:focus,
-    .entrada-valor:focus-within {
-      border-color: var(--azul);
-      box-shadow: 0 0 0 3px rgba(36, 75, 184, 0.12);
-    }
-
-    .ajuda {
-      margin: 6px 2px 0;
-      color: var(--texto-suave);
+    .hint {
+      margin: 7px 0 0;
+      color: #737981;
       font-size: 12px;
-      line-height: 1.5;
+      line-height: 1.45;
     }
 
-    .aviso {
-      margin-top: 7px;
-      color: var(--texto-suave);
-      font-size: 12px;
-      line-height: 1.5;
-    }
-
-    .alternancia {
+    .toggle-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      margin: 20px 0;
-      font-size: 14px;
+      margin: 22px 0;
     }
 
-    .alternancia input {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      opacity: 0;
-    }
-
-    .trilho {
-      position: relative;
-      width: 42px;
-      height: 24px;
-      flex: 0 0 42px;
-      border-radius: 20px;
-      background: #b9bdc7;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .trilho::after {
-      content: "";
-      position: absolute;
-      top: 3px;
-      left: 3px;
+    .toggle-row input {
       width: 18px;
       height: 18px;
-      border-radius: 50%;
-      background: #fff;
-      transition: transform 0.2s;
+      accent-color: #2552be;
     }
 
-    .alternancia input:checked + .trilho {
-      background: var(--azul);
-    }
-
-    .alternancia input:checked + .trilho::after {
-      transform: translateX(18px);
-    }
-
-    .alternancia input:focus-visible + .trilho {
-      outline: 3px solid rgba(36, 75, 184, 0.25);
-    }
-
-    .botao-secundario,
-    .botao-principal {
-      min-height: 42px;
-      padding: 10px 18px;
-      border-radius: 24px;
-      font: inherit;
+    .toggle-row label {
+      margin: 0;
+      font-size: 15px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
     }
 
-    .botao-secundario {
-      border: 1px solid #aeb5c5;
-      background: transparent;
-      color: var(--azul-escuro);
-    }
-
-    .botao-principal {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
+    button {
       border: 0;
-      background: var(--azul);
+      border-radius: 999px;
+      padding: 12px 20px;
+      background: #2552be;
       color: #fff;
+      font-size: 15px;
       font-weight: 600;
+      cursor: pointer;
     }
 
-    .botao-secundario:hover,
-    .botao-principal:hover {
-      transform: translateY(-1px);
+    button:hover {
+      background: #1c429e;
     }
 
-    .botao-principal:hover {
-      background: var(--azul-escuro);
+    .result-block {
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e7eb;
     }
 
-    .linha {
+    .result-block:last-of-type {
+      border-bottom: 0;
+    }
+
+    .result-heading {
       display: flex;
       justify-content: space-between;
-      gap: 16px;
+      gap: 14px;
       align-items: baseline;
-    }
-
-    .linha strong {
-      font-size: 16px;
-    }
-
-    .valor {
-      white-space: nowrap;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .separador {
-      height: 1px;
-      margin: 16px 0;
-      background: var(--borda);
-    }
-
-    .bloco-resultado {
-      margin-top: 20px;
-    }
-
-    .bloco-resultado h3 {
-      margin: 0 0 12px;
-      font-size: 16px;
+      margin-bottom: 11px;
       font-weight: 600;
     }
 
-    .detalhe {
-      margin-top: 12px;
-      color: var(--texto-suave);
-      font-size: 14px;
+    .result-value {
+      white-space: nowrap;
+      font-weight: 600;
     }
 
-    .detalhe .linha {
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
       margin: 8px 0;
+      color: #41464d;
+      line-height: 1.45;
     }
 
-    .observacao {
-      margin: 12px 0 0;
-      color: var(--texto-suave);
+    .result-line span:last-child {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .primary-result {
+      color: #153f9e;
+      font-size: 19px;
+      font-weight: 700;
+    }
+
+    .note {
+      margin: 18px 0 0;
+      color: #737981;
       font-size: 12px;
-      line-height: 1.55;
-    }
-
-    .resultado-final {
-      margin-top: 16px;
+      line-height: 1.5;
     }
 
     @media (max-width: 760px) {
       body {
-        padding: 18px 12px;
+        padding: 16px 12px;
       }
 
       .container {
@@ -288,12 +200,7 @@ Salve o conteúdo como `index.html` e abra o arquivo no navegador.
       }
 
       .card {
-        padding: 22px 18px;
-      }
-
-      h1,
-      h2 {
-        font-size: 20px;
+        padding: 20px;
       }
     }
   </style>
@@ -301,269 +208,201 @@ Salve o conteúdo como `index.html` e abra o arquivo no navegador.
 
 <body>
   <main class="container">
-    <section class="card" aria-labelledby="titulo-simulador">
-      <h1 id="titulo-simulador">Simulador de vendas no cartão</h1>
-      <p class="descricao">
-        Simule uma cobrança à vista ou parcelada no cartão de crédito e veja
-        quanto você recebe em cada opção.
+    <section class="card" aria-labelledby="form-title">
+      <h1 id="form-title">Simulador de vendas no cartão</h1>
+      <p class="intro">
+        Simule o valor cobrado no cartão, o recebimento parcelado e uma estimativa
+        do valor líquido ao antecipar as parcelas.
       </p>
 
-      <div class="campo">
-        <label for="valor">Total que você deseja receber</label>
-        <div class="entrada-valor">
-          <span class="prefixo">R$</span>
-          <input
-            id="valor"
-            type="text"
-            inputmode="decimal"
-            value="160.000,00"
-            autocomplete="off"
-            aria-describedby="ajuda-valor"
-          >
-        </div>
-        <p class="ajuda" id="ajuda-valor">
-          Digite o valor em reais. Exemplo: 1.500,00.
-        </p>
+      <label for="amount">Valor que você deseja receber</label>
+      <div class="input-wrap">
+        <span class="currency">R$</span>
+        <input id="amount" type="number" min="0.01" step="0.01" value="160000">
       </div>
 
-      <div class="campo">
-        <label for="parcelas">Número de parcelas</label>
-        <select id="parcelas"></select>
-        <p class="ajuda">
-          Taxa do cartão: 4,29% + R$ 0,49 por cobrança.
-        </p>
-        <p class="aviso">
-          Parcelamentos acima de 12 vezes podem depender da bandeira e da
-          aprovação do emissor do cartão.
-        </p>
+      <label for="installments">Número de parcelas</label>
+      <select id="installments"></select>
+
+      <p class="hint">
+        Taxa do cartão conforme o número de parcelas. É cobrado também
+        R$ 0,49 por parcela.
+      </p>
+
+      <div class="toggle-row">
+        <input id="passFees" type="checkbox" checked>
+        <label for="passFees">Repassar taxas do cartão ao cliente</label>
       </div>
 
-      <label class="alternancia" for="repassar">
-        <input id="repassar" type="checkbox" checked>
-        <span class="trilho" aria-hidden="true"></span>
-        <span>Repassar taxa do cartão ao cliente</span>
-      </label>
-
-      <button class="botao-secundario" id="novaSimulacao" type="button">
-        Nova simulação
-      </button>
+      <button id="resetButton" type="button">Nova simulação de venda</button>
     </section>
 
-    <section class="card" aria-labelledby="titulo-resultado">
-      <h2 id="titulo-resultado">Resultado da simulação</h2>
+    <section class="card" aria-labelledby="result-title">
+      <h2 id="result-title">Resultado da simulação</h2>
 
-      <div class="bloco-resultado">
-        <div class="linha">
-          <strong>Valor cobrado do cliente</strong>
-          <strong class="valor" id="valorCobrado">—</strong>
+      <div class="result-block">
+        <div class="result-heading">
+          <span>Valor cobrado do cliente</span>
+          <span class="result-value" id="chargedTotal">—</span>
         </div>
-
-        <div class="separador"></div>
-
-        <div class="linha">
-          <span id="textoParcelas">—</span>
-        </div>
-        <div class="detalhe">
-          <div class="linha">
-            <span>Valor por parcela</span>
-            <span class="valor" id="valorParcelaCliente">—</span>
-          </div>
+        <div class="result-line">
+          <span id="chargedInstallments">—</span>
+          <span id="rateDescription">—</span>
         </div>
       </div>
 
-      <div class="bloco-resultado">
-        <h3>Você recebe sem antecipação</h3>
-        <div class="linha">
+      <div class="result-block">
+        <div class="result-heading">
+          <span>Você recebe sem antecipar</span>
+          <span class="result-value" id="receiveTotal">—</span>
+        </div>
+        <div class="result-line">
           <span>Uma parcela a cada 32 dias</span>
-          <strong class="valor" id="recebimentoSemAntecipacao">—</strong>
+          <span id="receiveInstallment">—</span>
         </div>
-        <div class="detalhe">
-          <div class="linha">
-            <span id="textoParcelasRecebidas">—</span>
-          </div>
-          <div class="linha">
-            <span>Taxa do cartão</span>
-            <span class="valor" id="taxaCartao">—</span>
-          </div>
+        <div class="result-line">
+          <span>Taxas estimadas do cartão</span>
+          <span id="cardFees">—</span>
         </div>
       </div>
 
-      <div class="bloco-resultado">
-        <h3>Você recebe com antecipação</h3>
-        <div class="linha">
-          <span>Recebimento em até 2 dias úteis</span>
-          <strong class="valor" id="recebimentoAntecipado">—</strong>
+      <div class="result-block">
+        <div class="result-heading">
+          <span>Você recebe com antecipação</span>
+          <span class="result-value primary-result" id="advanceTotal">—</span>
         </div>
-        <div class="detalhe">
-          <div class="linha">
-            <span id="textoAntecipacao">—</span>
-          </div>
-          <div class="linha">
-            <span>Taxa de antecipação</span>
-            <span class="valor">1,6% ao mês</span>
-          </div>
+        <div class="result-line">
+          <span id="advanceDescription">—</span>
+          <span id="advanceRate">Taxa de antecipação: 1,6% ao mês</span>
         </div>
       </div>
 
-      <div class="resultado-final">
-        <button class="botao-principal" id="criarCobranca" type="button">
-          <span aria-hidden="true">＋</span>
-          Criar cobrança
-        </button>
-      </div>
-
-      <p class="observacao">
-        Esta é uma simulação. O cálculo da antecipação considera parcelas
-        a cada 32 dias e taxa composta de 1,6% ao mês. O valor efetivo pode
-        variar conforme as condições da operadora e do contrato.
+      <p class="note">
+        Esta é uma estimativa para simulação. O cálculo considera a taxa percentual
+        sobre o valor cobrado, R$ 0,49 por parcela e antecipação simples de 1,6%
+        ao mês, considerando vencimentos a cada 32 dias. As condições reais podem
+        variar conforme a operadora, o prazo e a análise de crédito.
       </p>
     </section>
   </main>
 
   <script>
-    const TAXA_PERCENTUAL = 0.0429;
-    const TAXA_FIXA = 0.49;
-    const TAXA_ANTECIPACAO_MENSAL = 0.016;
-    const DIAS_ENTRE_PARCELAS = 32;
+    const amountInput = document.getElementById("amount");
+    const installmentsSelect = document.getElementById("installments");
+    const passFeesInput = document.getElementById("passFees");
 
-    const elementoValor = document.getElementById("valor");
-    const elementoParcelas = document.getElementById("parcelas");
-    const elementoRepassar = document.getElementById("repassar");
+    const cardFixedFee = 0.49;
+    const advanceMonthlyRate = 0.016;
+    const daysBetweenInstallments = 32;
 
-    const formatadorMoeda = new Intl.NumberFormat("pt-BR", {
+    const currency = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
 
-    function formatarMoeda(valor) {
-      return formatadorMoeda.format(Number.isFinite(valor) ? valor : 0);
+    function getCardRate(installments) {
+      if (installments <= 6) return 0.0349;
+      if (installments <= 12) return 0.0399;
+      return 0.0429;
     }
 
-    function lerValorBrasileiro(texto) {
-      const limpo = texto
-        .trim()
-        .replace(/[R$\s]/g, "")
-        .replace(/\./g, "")
-        .replace(",", ".");
-
-      const valor = Number(limpo);
-      return Number.isFinite(valor) && valor >= 0 ? valor : 0;
+    function formatMoney(value) {
+      return currency.format(Number.isFinite(value) ? value : 0);
     }
 
-    function arredondarCentavos(valor) {
-      return Math.round((valor + Number.EPSILON) * 100) / 100;
+    function roundToCents(value) {
+      return Math.round((value + Number.EPSILON) * 100) / 100;
     }
 
-    function preencherParcelas() {
-      for (let quantidade = 1; quantidade <= 21; quantidade++) {
-        const opcao = document.createElement("option");
-        opcao.value = quantidade;
-        opcao.textContent =
-          quantidade === 1 ? "À vista (1 parcela)" : `Em até ${quantidade}x`;
-        elementoParcelas.appendChild(opcao);
+    function populateInstallments() {
+      for (let count = 1; count <= 21; count++) {
+        const option = document.createElement("option");
+        option.value = count;
+        option.textContent = count === 1 ? "À vista (1x)" : `Em ${count}x`;
+        installmentsSelect.appendChild(option);
       }
 
-      elementoParcelas.value = "21";
+      installmentsSelect.value = "21";
     }
 
-    function calcular() {
-      const valorDesejado = lerValorBrasileiro(elementoValor.value);
-      const quantidade = Number(elementoParcelas.value);
-      const repassarTaxas = elementoRepassar.checked;
+    function simulate() {
+      const desiredReceive = Math.max(0, Number(amountInput.value) || 0);
+      const installments = Number(installmentsSelect.value);
+      const rate = getCardRate(installments);
+      const passFees = passFeesInput.checked;
 
-      let valorCobrado;
-      let valorLiquidoTotal;
-      let taxaCartaoTotal;
+      let chargedTotal;
 
-      if (repassarTaxas) {
-        // Ajusta a cobrança para que, após a taxa percentual e a taxa fixa,
-        // o valor líquido seja o valor desejado.
-        valorCobrado = (valorDesejado + TAXA_FIXA) / (1 - TAXA_PERCENTUAL);
-        valorLiquidoTotal = valorDesejado;
+      if (passFees) {
+        // Calcula o valor cobrado para que, após as taxas, reste o valor desejado.
+        chargedTotal =
+          (desiredReceive + cardFixedFee * installments) / (1 - rate);
       } else {
-        valorCobrado = valorDesejado;
-        valorLiquidoTotal =
-          valorCobrado * (1 - TAXA_PERCENTUAL) - TAXA_FIXA;
-        valorLiquidoTotal = Math.max(0, valorLiquidoTotal);
+        chargedTotal = desiredReceive;
       }
 
-      valorCobrado = arredondarCentavos(valorCobrado);
-      valorLiquidoTotal = arredondarCentavos(valorLiquidoTotal);
-      taxaCartaoTotal = arredondarCentavos(valorCobrado - valorLiquidoTotal);
+      chargedTotal = roundToCents(chargedTotal);
 
-      const valorParcelaCliente = arredondarCentavos(
-        valorCobrado / quantidade
-      );
+      const percentageFee = chargedTotal * rate;
+      const fixedFees = cardFixedFee * installments;
+      const totalCardFees = percentageFee + fixedFees;
+      const receivedTotal = Math.max(0, chargedTotal - totalCardFees);
+      const receivedPerInstallment = receivedTotal / installments;
+      const chargedPerInstallment = chargedTotal / installments;
 
-      const valorLiquidoPorParcela =
-        valorLiquidoTotal / quantidade;
+      // Estima a antecipação descontando 1,6% ao mês de cada parcela,
+      // de acordo com o prazo até o vencimento.
+      let anticipatedTotal = 0;
 
-      // Desconta cada parcela pelo tempo até o recebimento:
-      // 32 dias para a primeira, 64 para a segunda, e assim por diante.
-      let valorAntecipado = 0;
+      for (let index = 1; index <= installments; index++) {
+        const monthsUntilDue = (daysBetweenInstallments * index) / 30;
+        const discount = advanceMonthlyRate * monthsUntilDue;
+        const installmentAfterDiscount =
+          receivedPerInstallment * Math.max(0, 1 - discount);
 
-      for (let parcela = 1; parcela <= quantidade; parcela++) {
-        const mesesAteRecebimento =
-          (DIAS_ENTRE_PARCELAS * parcela) / 30;
-
-        const fatorDesconto = Math.pow(
-          1 + TAXA_ANTECIPACAO_MENSAL,
-          mesesAteRecebimento
-        );
-
-        valorAntecipado += valorLiquidoPorParcela / fatorDesconto;
+        anticipatedTotal += installmentAfterDiscount;
       }
 
-      valorAntecipado = arredondarCentavos(valorAntecipado);
+      document.getElementById("chargedTotal").textContent =
+        formatMoney(chargedTotal);
 
-      document.getElementById("valorCobrado").textContent =
-        formatarMoeda(valorCobrado);
+      document.getElementById("chargedInstallments").textContent =
+        `${installments} ${installments === 1 ? "parcela" : "parcelas"} de ${formatMoney(chargedPerInstallment)}`;
 
-      document.getElementById("textoParcelas").textContent =
-        quantidade === 1
-          ? "1 parcela"
-          : `${quantidade} parcelas`;
+      document.getElementById("rateDescription").textContent =
+        `Taxa: ${(rate * 100).toFixed(2).replace(".", ",")}% + ${formatMoney(cardFixedFee)}`;
 
-      document.getElementById("valorParcelaCliente").textContent =
-        formatarMoeda(valorParcelaCliente);
+      document.getElementById("receiveTotal").textContent =
+        formatMoney(receivedTotal);
 
-      document.getElementById("recebimentoSemAntecipacao").textContent =
-        formatarMoeda(valorLiquidoTotal);
+      document.getElementById("receiveInstallment").textContent =
+        formatMoney(receivedPerInstallment);
 
-      document.getElementById("textoParcelasRecebidas").textContent =
-        quantidade === 1
-          ? `1 parcela de ${formatarMoeda(valorLiquidoPorParcela)}`
-          : `${quantidade} parcelas de ${formatarMoeda(valorLiquidoPorParcela)}`;
+      document.getElementById("cardFees").textContent =
+        formatMoney(totalCardFees);
 
-      document.getElementById("taxaCartao").textContent =
-        `${formatarMoeda(taxaCartaoTotal)} (4,29% + ${formatarMoeda(TAXA_FIXA)})`;
+      document.getElementById("advanceTotal").textContent =
+        formatMoney(anticipatedTotal);
 
-      document.getElementById("recebimentoAntecipado").textContent =
-        formatarMoeda(valorAntecipado);
-
-      document.getElementById("textoAntecipacao").textContent =
-        quantidade === 1
-          ? "1 parcela antecipada"
-          : `${quantidade} parcelas antecipadas`;
+      document.getElementById("advanceDescription").textContent =
+        installments === 1
+          ? `Recebimento antecipado de 1 parcela`
+          : `Recebimento antecipado de ${installments} parcelas`;
     }
 
-    preencherParcelas();
-    calcular();
-
-    elementoValor.addEventListener("input", calcular);
-    elementoParcelas.addEventListener("change", calcular);
-    elementoRepassar.addEventListener("change", calcular);
-
-    document.getElementById("novaSimulacao").addEventListener("click", () => {
-      elementoValor.value = "";
-      elementoValor.focus();
-      calcular();
+    document.getElementById("resetButton").addEventListener("click", () => {
+      amountInput.value = "160000";
+      installmentsSelect.value = "1";
+      passFeesInput.checked = true;
+      simulate();
     });
 
-    document.getElementById("criarCobranca").addEventListener("click", () => {
-      alert("Esta página é uma simulação. Para criar uma cobrança real, conecte este botão à sua plataforma de pagamentos.");
-    });
+    amountInput.addEventListener("input", simulate);
+    installmentsSelect.addEventListener("change", simulate);
+    passFeesInput.addEventListener("change", simulate);
+
+    populateInstallments();
+    simulate();
   </script>
 </body>
 </html>
-```
