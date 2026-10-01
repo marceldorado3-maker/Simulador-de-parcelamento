@@ -1,19 +1,25 @@
+Abaixo está um `index.html` completo, responsivo e sem dependências externas. Ele permite escolher de 1 a 21 parcelas e calcula os valores com as taxas da imagem. O cálculo considera a taxa fixa de **R$ 0,49 por cobrança** e, na antecipação, parcelas a cada **32 dias**.
+
+Salve o conteúdo como `index.html` e abra o arquivo no navegador.
+
+```html
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simulador de vendas no cartão</title>
+
   <style>
     :root {
-      --azul: #2452d5;
-      --azul-escuro: #183fae;
-      --fundo: #f4f6fb;
-      --cartao: #ffffff;
-      --texto: #202533;
-      --texto-secundario: #657087;
-      --borda: #dce1ec;
-      --verde: #137a4b;
+      color-scheme: light;
+      --azul: #244bb8;
+      --azul-escuro: #1a3b98;
+      --texto: #202124;
+      --texto-suave: #666a73;
+      --borda: #dedfe4;
+      --fundo: #f5f6f8;
+      --branco: #fff;
     }
 
     * {
@@ -22,347 +28,542 @@
 
     body {
       margin: 0;
-      padding: 32px 16px;
+      padding: 32px 18px;
       background: var(--fundo);
       color: var(--texto);
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    .pagina {
-      width: min(1100px, 100%);
+    .container {
+      width: min(1120px, 100%);
       margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
     }
 
-    .cartao {
-      background: var(--cartao);
+    .card {
+      background: var(--branco);
       border: 1px solid var(--borda);
       border-radius: 18px;
       padding: 28px;
-      box-shadow: 0 8px 30px rgba(25, 42, 80, 0.06);
+      box-shadow: 0 4px 18px rgba(20, 30, 60, 0.04);
+    }
+
+    h1,
+    h2 {
+      margin: 0 0 12px;
+      font-weight: 500;
     }
 
     h1 {
-      margin: 0 0 8px;
-      font-size: clamp(24px, 4vw, 32px);
+      font-size: 23px;
     }
 
-    .introducao {
-      color: var(--texto-secundario);
+    h2 {
+      font-size: 22px;
+    }
+
+    .descricao {
+      margin: 0 0 28px;
+      color: var(--texto-suave);
       line-height: 1.55;
-      margin: 0 0 26px;
-    }
-
-    .grade {
-      display: grid;
-      grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1.1fr);
-      gap: 28px;
-      align-items: start;
     }
 
     .campo {
       margin-bottom: 20px;
     }
 
-    label {
+    label,
+    .rotulo {
       display: block;
-      margin-bottom: 8px;
+      margin: 0 0 8px;
       font-size: 14px;
-      font-weight: 600;
+    }
+
+    .entrada-valor {
+      display: flex;
+      align-items: center;
+      min-height: 46px;
+      border: 1px solid var(--borda);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .prefixo {
+      padding: 0 12px;
+      color: var(--texto-suave);
+      border-right: 1px solid var(--borda);
     }
 
     input,
     select {
       width: 100%;
-      min-height: 48px;
-      padding: 12px 14px;
-      color: var(--texto);
-      background: #fff;
+      min-height: 46px;
+      padding: 10px 12px;
       border: 1px solid var(--borda);
       border-radius: 10px;
+      background: var(--branco);
+      color: var(--texto);
       font: inherit;
       outline: none;
     }
 
+    .entrada-valor input {
+      min-height: 44px;
+      border: 0;
+      border-radius: 0;
+    }
+
     input:focus,
-    select:focus {
+    select:focus,
+    .entrada-valor:focus-within {
       border-color: var(--azul);
-      box-shadow: 0 0 0 3px rgba(36, 82, 213, 0.12);
+      box-shadow: 0 0 0 3px rgba(36, 75, 184, 0.12);
     }
 
     .ajuda {
-      margin: 7px 0 0;
-      color: var(--texto-secundario);
+      margin: 6px 2px 0;
+      color: var(--texto-suave);
       font-size: 12px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
-    .resultado {
-      padding: 22px;
-      border: 1px solid var(--borda);
-      border-radius: 14px;
-      background: #fbfcff;
+    .aviso {
+      margin-top: 7px;
+      color: var(--texto-suave);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
-    .resultado h2 {
-      margin: 0 0 18px;
-      font-size: 21px;
-    }
-
-    .resultado-principal {
-      padding: 18px;
-      background: #eef3ff;
-      border: 1px solid #d8e2ff;
-      border-radius: 12px;
-      margin-bottom: 16px;
-    }
-
-    .resultado-principal .rotulo {
-      color: var(--texto-secundario);
+    .alternancia {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0;
       font-size: 14px;
     }
 
-    .valor-grande {
-      margin-top: 6px;
-      color: var(--azul-escuro);
-      font-size: clamp(27px, 5vw, 36px);
-      font-weight: 700;
-      overflow-wrap: anywhere;
+    .alternancia input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
     }
 
-    .parcela {
-      margin-top: 9px;
-      font-size: 15px;
+    .trilho {
+      position: relative;
+      width: 42px;
+      height: 24px;
+      flex: 0 0 42px;
+      border-radius: 20px;
+      background: #b9bdc7;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .trilho::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+    }
+
+    .alternancia input:checked + .trilho {
+      background: var(--azul);
+    }
+
+    .alternancia input:checked + .trilho::after {
+      transform: translateX(18px);
+    }
+
+    .alternancia input:focus-visible + .trilho {
+      outline: 3px solid rgba(36, 75, 184, 0.25);
+    }
+
+    .botao-secundario,
+    .botao-principal {
+      min-height: 42px;
+      padding: 10px 18px;
+      border-radius: 24px;
+      font: inherit;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .botao-secundario {
+      border: 1px solid #aeb5c5;
+      background: transparent;
+      color: var(--azul-escuro);
+    }
+
+    .botao-principal {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 0;
+      background: var(--azul);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .botao-secundario:hover,
+    .botao-principal:hover {
+      transform: translateY(-1px);
+    }
+
+    .botao-principal:hover {
+      background: var(--azul-escuro);
     }
 
     .linha {
       display: flex;
       justify-content: space-between;
       gap: 16px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--borda);
-      font-size: 14px;
-    }
-
-    .linha:last-child {
-      border-bottom: 0;
-    }
-
-    .linha span:first-child {
-      color: var(--texto-secundario);
+      align-items: baseline;
     }
 
     .linha strong {
+      font-size: 16px;
+    }
+
+    .valor {
+      white-space: nowrap;
       text-align: right;
+      font-variant-numeric: tabular-nums;
     }
 
-    .recebimento {
-      color: var(--verde);
+    .separador {
+      height: 1px;
+      margin: 16px 0;
+      background: var(--borda);
     }
 
-    .aviso {
-      margin-top: 18px;
-      padding: 12px 14px;
-      background: #fff8e8;
-      border: 1px solid #f3dfaa;
-      border-radius: 10px;
-      color: #715515;
-      font-size: 12px;
-      line-height: 1.5;
+    .bloco-resultado {
+      margin-top: 20px;
     }
 
-    .erro {
-      display: none;
+    .bloco-resultado h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .detalhe {
       margin-top: 12px;
-      color: #b42318;
-      font-size: 13px;
-      line-height: 1.45;
+      color: var(--texto-suave);
+      font-size: 14px;
+    }
+
+    .detalhe .linha {
+      margin: 8px 0;
+    }
+
+    .observacao {
+      margin: 12px 0 0;
+      color: var(--texto-suave);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .resultado-final {
+      margin-top: 16px;
     }
 
     @media (max-width: 760px) {
       body {
-        padding: 16px 10px;
+        padding: 18px 12px;
       }
 
-      .cartao {
-        padding: 20px 16px;
-      }
-
-      .grade {
+      .container {
         grid-template-columns: 1fr;
+        gap: 16px;
       }
 
-      .resultado {
-        padding: 17px;
+      .card {
+        padding: 22px 18px;
+      }
+
+      h1,
+      h2 {
+        font-size: 20px;
       }
     }
   </style>
 </head>
+
 <body>
-  <main class="pagina">
-    <section class="cartao">
-      <h1>Simulador de vendas no cartão</h1>
-      <p class="introducao">
-        Informe quanto deseja receber já com a antecipação. O simulador calcula
-        automaticamente o total a cobrar e o valor de cada parcela.
+  <main class="container">
+    <section class="card" aria-labelledby="titulo-simulador">
+      <h1 id="titulo-simulador">Simulador de vendas no cartão</h1>
+      <p class="descricao">
+        Simule uma cobrança à vista ou parcelada no cartão de crédito e veja
+        quanto você recebe em cada opção.
       </p>
 
-      <div class="grade">
-        <section aria-label="Dados da simulação">
-          <div class="campo">
-            <label for="valorDesejado">Você recebe com antecipação</label>
-            <input
-              id="valorDesejado"
-              type="text"
-              inputmode="decimal"
-              autocomplete="off"
-              value="160.000,00"
-              aria-describedby="ajudaValor"
-            >
-            <p class="ajuda" id="ajudaValor">
-              Digite o valor líquido que deseja receber depois das taxas.
-            </p>
+      <div class="campo">
+        <label for="valor">Total que você deseja receber</label>
+        <div class="entrada-valor">
+          <span class="prefixo">R$</span>
+          <input
+            id="valor"
+            type="text"
+            inputmode="decimal"
+            value="160.000,00"
+            autocomplete="off"
+            aria-describedby="ajuda-valor"
+          >
+        </div>
+        <p class="ajuda" id="ajuda-valor">
+          Digite o valor em reais. Exemplo: 1.500,00.
+        </p>
+      </div>
+
+      <div class="campo">
+        <label for="parcelas">Número de parcelas</label>
+        <select id="parcelas"></select>
+        <p class="ajuda">
+          Taxa do cartão: 4,29% + R$ 0,49 por cobrança.
+        </p>
+        <p class="aviso">
+          Parcelamentos acima de 12 vezes podem depender da bandeira e da
+          aprovação do emissor do cartão.
+        </p>
+      </div>
+
+      <label class="alternancia" for="repassar">
+        <input id="repassar" type="checkbox" checked>
+        <span class="trilho" aria-hidden="true"></span>
+        <span>Repassar taxa do cartão ao cliente</span>
+      </label>
+
+      <button class="botao-secundario" id="novaSimulacao" type="button">
+        Nova simulação
+      </button>
+    </section>
+
+    <section class="card" aria-labelledby="titulo-resultado">
+      <h2 id="titulo-resultado">Resultado da simulação</h2>
+
+      <div class="bloco-resultado">
+        <div class="linha">
+          <strong>Valor cobrado do cliente</strong>
+          <strong class="valor" id="valorCobrado">—</strong>
+        </div>
+
+        <div class="separador"></div>
+
+        <div class="linha">
+          <span id="textoParcelas">—</span>
+        </div>
+        <div class="detalhe">
+          <div class="linha">
+            <span>Valor por parcela</span>
+            <span class="valor" id="valorParcelaCliente">—</span>
           </div>
+        </div>
+      </div>
 
-          <div class="campo">
-            <label for="parcelas">Número de parcelas</label>
-            <select id="parcelas">
-              <option value="1">1 parcela</option>
-              <option value="2">2 parcelas</option>
-              <option value="3">3 parcelas</option>
-              <option value="4">4 parcelas</option>
-              <option value="5">5 parcelas</option>
-              <option value="6">6 parcelas</option>
-              <option value="7">7 parcelas</option>
-              <option value="8">8 parcelas</option>
-              <option value="9">9 parcelas</option>
-              <option value="10">10 parcelas</option>
-              <option value="11">11 parcelas</option>
-              <option value="12">12 parcelas</option>
-              <option value="13">13 parcelas</option>
-              <option value="14">14 parcelas</option>
-              <option value="15">15 parcelas</option>
-              <option value="16">16 parcelas</option>
-              <option value="17">17 parcelas</option>
-              <option value="18">18 parcelas</option>
-              <option value="19">19 parcelas</option>
-              <option value="20">20 parcelas</option>
-              <option value="21" selected>21 parcelas</option>
-            </select>
-            <p class="ajuda" id="ajudaTaxa"></p>
+      <div class="bloco-resultado">
+        <h3>Você recebe sem antecipação</h3>
+        <div class="linha">
+          <span>Uma parcela a cada 32 dias</span>
+          <strong class="valor" id="recebimentoSemAntecipacao">—</strong>
+        </div>
+        <div class="detalhe">
+          <div class="linha">
+            <span id="textoParcelasRecebidas">—</span>
           </div>
-        </section>
-
-        <section class="resultado" aria-live="polite">
-          <h2>Resultado da simulação</h2>
-
-          <div class="resultado-principal">
-            <div class="rotulo">Total que você deseja cobrar</div>
-            <div class="valor-grande" id="totalCobrar">R$ 0,00</div>
-            <div class="parcela" id="valorParcela">—</div>
-          </div>
-
           <div class="linha">
             <span>Taxa do cartão</span>
-            <strong id="taxaCartao">—</strong>
+            <span class="valor" id="taxaCartao">—</span>
           </div>
-          <div class="linha">
-            <span>Taxa fixa mensal</span>
-            <strong id="taxaFixa">—</strong>
-          </div>
-          <div class="linha">
-            <span>Taxa de antecipação estimada</span>
-            <strong id="taxaAntecipacao">—</strong>
-          </div>
-          <div class="linha">
-            <span>Total estimado das taxas</span>
-            <strong id="totalTaxas">—</strong>
-          </div>
-          <div class="linha">
-            <span>Recebimento sem antecipação</span>
-            <strong id="semAntecipacao">—</strong>
-          </div>
-          <div class="linha">
-            <span>Recebimento com antecipação</span>
-            <strong class="recebimento" id="comAntecipacao">—</strong>
-          </div>
-
-          <div class="erro" id="mensagemErro"></div>
-        </section>
+        </div>
       </div>
 
-      <div class="aviso">
-        <strong>Como o cálculo é feito:</strong> a taxa do cartão é de 3,49% até
-        6 parcelas, 3,99% de 7 a 12 e 4,29% de 13 a 21. A taxa fixa de R$ 0,49
-        é contada em cada parcela mensal. A antecipação usa 1,6% ao mês, com
-        prazo estimado de 1 mês para a primeira parcela, 2 meses para a segunda
-        e assim por diante. O cálculo é estimativo; confirme as regras e taxas
-        efetivas com sua operadora.
+      <div class="bloco-resultado">
+        <h3>Você recebe com antecipação</h3>
+        <div class="linha">
+          <span>Recebimento em até 2 dias úteis</span>
+          <strong class="valor" id="recebimentoAntecipado">—</strong>
+        </div>
+        <div class="detalhe">
+          <div class="linha">
+            <span id="textoAntecipacao">—</span>
+          </div>
+          <div class="linha">
+            <span>Taxa de antecipação</span>
+            <span class="valor">1,6% ao mês</span>
+          </div>
+        </div>
       </div>
+
+      <div class="resultado-final">
+        <button class="botao-principal" id="criarCobranca" type="button">
+          <span aria-hidden="true">＋</span>
+          Criar cobrança
+        </button>
+      </div>
+
+      <p class="observacao">
+        Esta é uma simulação. O cálculo da antecipação considera parcelas
+        a cada 32 dias e taxa composta de 1,6% ao mês. O valor efetivo pode
+        variar conforme as condições da operadora e do contrato.
+      </p>
     </section>
   </main>
 
   <script>
-    const campoValor = document.getElementById("valorDesejado");
-    const campoParcelas = document.getElementById("parcelas");
+    const TAXA_PERCENTUAL = 0.0429;
+    const TAXA_FIXA = 0.49;
+    const TAXA_ANTECIPACAO_MENSAL = 0.016;
+    const DIAS_ENTRE_PARCELAS = 32;
 
-    const moeda = new Intl.NumberFormat("pt-BR", {
+    const elementoValor = document.getElementById("valor");
+    const elementoParcelas = document.getElementById("parcelas");
+    const elementoRepassar = document.getElementById("repassar");
+
+    const formatadorMoeda = new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL"
     });
 
-    function lerValorBrasileiro(texto) {
-      const limpo = texto
-        .replace(/[R$\s]/g, "")
-        .trim();
-
-      if (!limpo) return 0;
-
-      // Com vírgula, considera o padrão brasileiro: 1.234,56.
-      if (limpo.includes(",")) {
-        return Number(limpo.replace(/\./g, "").replace(",", "."));
-      }
-
-      // Sem vírgula, aceita número digitado com ponto decimal ou sem separador.
-      return Number(limpo);
+    function formatarMoeda(valor) {
+      return formatadorMoeda.format(Number.isFinite(valor) ? valor : 0);
     }
 
-    function taxaDoCartao(parcelas) {
-      if (parcelas <= 6) return 0.0349;
-      if (parcelas <= 12) return 0.0399;
-      return 0.0429;
+    function lerValorBrasileiro(texto) {
+      const limpo = texto
+        .trim()
+        .replace(/[R$\s]/g, "")
+        .replace(/\./g, "")
+        .replace(",", ".");
+
+      const valor = Number(limpo);
+      return Number.isFinite(valor) && valor >= 0 ? valor : 0;
+    }
+
+    function arredondarCentavos(valor) {
+      return Math.round((valor + Number.EPSILON) * 100) / 100;
+    }
+
+    function preencherParcelas() {
+      for (let quantidade = 1; quantidade <= 21; quantidade++) {
+        const opcao = document.createElement("option");
+        opcao.value = quantidade;
+        opcao.textContent =
+          quantidade === 1 ? "À vista (1 parcela)" : `Em até ${quantidade}x`;
+        elementoParcelas.appendChild(opcao);
+      }
+
+      elementoParcelas.value = "21";
     }
 
     function calcular() {
-      const valorLiquidoDesejado = lerValorBrasileiro(campoValor.value);
-      const parcelas = Number(campoParcelas.value);
-      const taxaCartao = taxaDoCartao(parcelas);
-      const taxaAntecipacaoMensal = 0.016;
-      const taxaFixaPorParcela = 0.49;
+      const valorDesejado = lerValorBrasileiro(elementoValor.value);
+      const quantidade = Number(elementoParcelas.value);
+      const repassarTaxas = elementoRepassar.checked;
 
-      const mensagemErro = document.getElementById("mensagemErro");
-      mensagemErro.style.display = "none";
-      mensagemErro.textContent = "";
+      let valorCobrado;
+      let valorLiquidoTotal;
+      let taxaCartaoTotal;
 
-      document.getElementById("ajudaTaxa").textContent =
-        `Taxa do cartão para ${parcelas} parcela${parcelas === 1 ? "" : "s"}: ` +
-        `${(taxaCartao * 100).toFixed(2).replace(".", ",")}% + ` +
-        `${moeda.format(taxaFixaPorParcela)} por parcela.`;
-
-      if (!Number.isFinite(valorLiquidoDesejado) || valorLiquidoDesejado <= 0) {
-        document.getElementById("totalCobrar").textContent = moeda.format(0);
-        document.getElementById("valorParcela").textContent = "Informe um valor maior que zero.";
-        document.getElementById("taxaCartao").textContent = "—";
-        document.getElementById("taxaFixa").textContent = "—";
-        document.getElementById("taxaAntecipacao").textContent = "—";
-        document.getElementById("totalTaxas").textContent = "—";
-        document.getElementById("semAntecipacao").textContent = "—";
-        document.getElementById("comAntecipacao").textContent = "—";
-        return;
+      if (repassarTaxas) {
+        // Ajusta a cobrança para que, após a taxa percentual e a taxa fixa,
+        // o valor líquido seja o valor desejado.
+        valorCobrado = (valorDesejado + TAXA_FIXA) / (1 - TAXA_PERCENTUAL);
+        valorLiquidoTotal = valorDesejado;
+      } else {
+        valorCobrado = valorDesejado;
+        valorLiquidoTotal =
+          valorCobrado * (1 - TAXA_PERCENTUAL) - TAXA_FIXA;
+        valorLiquidoTotal = Math.max(0, valorLiquidoTotal);
       }
 
-      /*
-        Cada parcela é antecipada por um número diferente de meses:
-        1ª parcela: 1 mês; 2ª: 2 meses; ...; última: N meses.
+      valorCobrado = arredondarCentavos(valorCobrado);
+      valorLiquidoTotal = arredondarCentavos(valorLiquidoTotal);
+      taxaCartaoTotal = arredondarCentavos(valorCobrado - valorLiquidoTotal);
 
-        A média dos meses de antecipação é (N + 1) / 2.
-        A
+      const valorParcelaCliente = arredondarCentavos(
+        valorCobrado / quantidade
+      );
+
+      const valorLiquidoPorParcela =
+        valorLiquidoTotal / quantidade;
+
+      // Desconta cada parcela pelo tempo até o recebimento:
+      // 32 dias para a primeira, 64 para a segunda, e assim por diante.
+      let valorAntecipado = 0;
+
+      for (let parcela = 1; parcela <= quantidade; parcela++) {
+        const mesesAteRecebimento =
+          (DIAS_ENTRE_PARCELAS * parcela) / 30;
+
+        const fatorDesconto = Math.pow(
+          1 + TAXA_ANTECIPACAO_MENSAL,
+          mesesAteRecebimento
+        );
+
+        valorAntecipado += valorLiquidoPorParcela / fatorDesconto;
+      }
+
+      valorAntecipado = arredondarCentavos(valorAntecipado);
+
+      document.getElementById("valorCobrado").textContent =
+        formatarMoeda(valorCobrado);
+
+      document.getElementById("textoParcelas").textContent =
+        quantidade === 1
+          ? "1 parcela"
+          : `${quantidade} parcelas`;
+
+      document.getElementById("valorParcelaCliente").textContent =
+        formatarMoeda(valorParcelaCliente);
+
+      document.getElementById("recebimentoSemAntecipacao").textContent =
+        formatarMoeda(valorLiquidoTotal);
+
+      document.getElementById("textoParcelasRecebidas").textContent =
+        quantidade === 1
+          ? `1 parcela de ${formatarMoeda(valorLiquidoPorParcela)}`
+          : `${quantidade} parcelas de ${formatarMoeda(valorLiquidoPorParcela)}`;
+
+      document.getElementById("taxaCartao").textContent =
+        `${formatarMoeda(taxaCartaoTotal)} (4,29% + ${formatarMoeda(TAXA_FIXA)})`;
+
+      document.getElementById("recebimentoAntecipado").textContent =
+        formatarMoeda(valorAntecipado);
+
+      document.getElementById("textoAntecipacao").textContent =
+        quantidade === 1
+          ? "1 parcela antecipada"
+          : `${quantidade} parcelas antecipadas`;
+    }
+
+    preencherParcelas();
+    calcular();
+
+    elementoValor.addEventListener("input", calcular);
+    elementoParcelas.addEventListener("change", calcular);
+    elementoRepassar.addEventListener("change", calcular);
+
+    document.getElementById("novaSimulacao").addEventListener("click", () => {
+      elementoValor.value = "";
+      elementoValor.focus();
+      calcular();
+    });
+
+    document.getElementById("criarCobranca").addEventListener("click", () => {
+      alert("Esta página é uma simulação. Para criar uma cobrança real, conecte este botão à sua plataforma de pagamentos.");
+    });
+  </script>
+</body>
+</html>
+```
